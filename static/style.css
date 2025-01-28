@@ -1,0 +1,197 @@
+:root[data-theme="dark"] {
+    --bg-primary: linear-gradient(to bottom right, #0c0c1d, #1a1a2e);
+    --bg-secondary: rgba(26, 26, 46, 0.8);
+    --text-primary: #fff;
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --accent: #10b981;
+    --nav-bg: rgba(26, 26, 46, 0.8);
+}
+
+:root[data-theme="light"] {
+    --bg-primary: linear-gradient(to bottom right, #f0f0f5, #ffffff);
+    --bg-secondary: rgba(255, 255, 255, 0.8);
+    --text-primary: #1a1a2e;
+    --text-secondary: rgba(26, 26, 46, 0.6);
+    --accent: #10b981;
+    --nav-bg: rgba(255, 255, 255, 0.8);
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    transition: all 0.3s ease;
+}
+
+/* Theme Toggle Styles */
+.theme-toggle {
+    position: fixed;
+    top: 15px;
+    right: 20px;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.theme-toggle-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle-button:hover {
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.w3-bar {
+    width: 100%;
+    overflow: hidden;
+    background: var(--nav-bg);
+    backdrop-filter: blur(10px);
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+}
+
+.w3-bar-item {
+    padding: 14px 16px;
+    float: left;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.w3-bar-item:hover {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--accent);
+}
+
+.welcome-section {
+    text-align: center;
+    padding: 180px 20px 100px;
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+    z-index: -1;
+}
+
+.welcome-section h1 {
+    margin-bottom: 30px;
+    font-size: 3.5em;
+    background: linear-gradient(45deg, var(--text-primary), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+    }
+    to {
+        text-shadow: 0 0 30px rgba(16, 185, 129, 0.8);
+    }
+}
+
+.lets-go-btn {
+    background: linear-gradient(45deg, #10b981, #3b82f6);
+    color: white;
+    padding: 16px 32px;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 30px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    display: inline-block;
+}
+
+.lets-go-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.about-section {
+    padding: 80px 20px;
+    text-align: center;
+    background: var(--bg-secondary);
+    backdrop-filter: blur(10px);
+    margin: 40px 0;
+}
+
+.footer {
+    background: var(--bg-secondary);
+    backdrop-filter: blur(10px);
+    padding: 40px 20px;
+    text-align: center;
+    margin-top: auto;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    padding: 0 20px;
+}
+
+.footer-section {
+    text-align: left;
+}
+
+.footer-section h3 {
+    color: var(--accent);
+    margin-bottom: 20px;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 10px;
+}
+
+.footer-section ul li a {
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-section ul li a:hover {
+    color: var(--accent);
+}
+
+.copyright {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
