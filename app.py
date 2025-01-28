@@ -6,8 +6,11 @@ from model import VideoQAPipeline
 import os
 
 from flask import Flask, render_template
-app = FastAPI()
-
+app = FastAPI(
+    title="Clarivue",
+    description="Ask me anything!!",
+    version="1.0.0"
+)
 # Serve static files (CSS, JS)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
