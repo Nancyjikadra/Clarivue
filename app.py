@@ -10,8 +10,8 @@ app = FastAPI()
 # Serve static files (CSS, JS)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Initialize the VideoQAPipeline
-pipeline = VideoQAPipeline()
+# Initialize the VideoQAPipeline with the videos folder
+pipeline = VideoQAPipeline(video_folder="videos") 
 
 # Set up templates
 templates = Jinja2Templates(directory="templates")
