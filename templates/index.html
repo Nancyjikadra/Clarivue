@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+<head>
+    <title>Clarivue</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+
+<div class="theme-toggle">
+    <button class="theme-toggle-button" onclick="toggleTheme()">
+        <i class="fa fa-moon-o"></i>
+    </button>
+</div>
+
+<div class="w3-bar">
+    <a href="#home" class="w3-bar-item">HOME</a>
+    <a href="#about" class="w3-bar-item">ABOUT</a>
+    <a href="#Login" class="w3-bar-item"><i class="fa fa-user"></i> Login</a>
+    <a href="#New" class="w3-bar-item"><i class="fa fa-th"></i> New</a>
+    <a href="#Contact" class="w3-bar-item"><i class="fa fa-envelope"></i> CONTACT</a>
+</div>
+
+<div class="welcome-section">
+    <h1>AskSphere</h1>
+</div>
+
+<div style="text-align: center; padding: 20px;">
+    <h2>Ask me anything!</h2>
+    <form id="questionForm" style="max-width: 500px; margin: 0 auto;">
+        <label for="question">Question:</label>
+        <input type="text" id="question" name="question" required 
+               style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px;">
+        <button type="submit" 
+                style="padding: 10px 20px; background: var(--accent); color: white; border: none; border-radius: 5px; cursor: pointer;">
+            Ask
+        </button>
+    </form>
+    
+    <!-- Display the answer here -->
+    <div id="answerContainer" style="margin-top: 20px; padding: 15px; background: var(--bg-secondary); border-radius: 5px; display: none;">
+        <p id="answerText"></p>
+    </div>
+</div>
+
+<div id="about" class="about-section">
+    <h2>About Us</h2>
+    <p>Your friend, shopkeeper.</p>
+</div>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>Company</h3>
+            <ul>
+                <li><a href="#about">About</a></li>
+                <li><a href="#blog">Blog</a></li>
+                <li><a href="#careers">Careers</a></li>
+                <li><a href="#charter">Charter</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>Solutions</h3>
+            <ul>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#examples">Examples</a></li>
+                <li><a href="#docs">Documentation</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>Resources</h3>
+            <ul>
+                <li><a href="#developers">Developers</a></li>
+                <li><a href="#support">Support</a></li>
+                <li><a href="#safety">Safety</a></li>
+                <li><a href="#terms">Terms & Policies</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="copyright">
+        © 2024 AskSphere. All rights reserved.
+    </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
