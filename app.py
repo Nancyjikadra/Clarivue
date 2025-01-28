@@ -5,7 +5,9 @@ from fastapi.templating import Jinja2Templates
 from model import VideoQAPipeline
 import os
 
-app = FastAPI()
+from flask import Flask, render_template
+app = Flask(__name__)
+
 
 # Serve static files (CSS, JS)
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -41,6 +43,5 @@ async def predict(request: Request):
     
     return JSONResponse(result)
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
