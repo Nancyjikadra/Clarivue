@@ -15,7 +15,10 @@ app = FastAPI(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Initialize the VideoQAPipeline with the videos folder
-pipeline = VideoQAPipeline(video_folder="videos") 
+try:
+    pipeline = VideoQAPipeline(video_folder="videos")
+except Exception as e:
+    print(f"Error initializing pipeline: {e}")
 
 # Set up templates
 templates = Jinja2Templates(directory="templates")
