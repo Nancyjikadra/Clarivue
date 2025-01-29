@@ -18,3 +18,5 @@ numpy
 librosa
 streamlit
 ffmpeg-python
+
+psutil==5.9.8
