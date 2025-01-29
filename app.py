@@ -5,6 +5,68 @@ from fastapi.templating import Jinja2Templates
 from model import VideoQAPipeline
 import os
 
+import logging
+import psutil
+import sys
+import gc
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+@app.on_event("startup")
+async def startup_event():
+    logger.info("Starting up application...")
+    try:
+        # System information
+        process = psutil.Process()
+        
+        # Memory usage
+        memory = process.memory_info()
+        logger.info(f"Memory RSS: {memory.rss / 1024 / 1024:.2f} MB")
+        logger.info(f"Memory VMS: {memory.vms / 1024 / 1024:.2f} MB")
+        
+        # CPU usage
+        logger.info(f"CPU Usage: {process.cpu_percent()}%")
+        
+        # Available system resources
+        logger.info(f"Total System Memory: {psutil.virtual_memory().total / 1024 / 1024:.2f} MB")
+        logger.info(f"Available Memory: {psutil.virtual_memory().available / 1024 / 1024:.2f} MB")
+        
+        # Python version
+        logger.info(f"Python Version: {sys.version}")
+        
+        # Loaded modules
+        logger.info("Initializing critical modules...")
+        
+        # Model initialization logging
+        logger.info("Initializing VideoQAPipeline...")
+        pipeline = VideoQAPipeline(video_folder="videos")
+        logger.info("VideoQAPipeline initialized successfully")
+        
+        # Directory check
+        logger.info(f"Current working directory: {os.getcwd()}")
+        logger.info(f"Contents of videos directory: {os.listdir('videos')}")
+        
+        # Garbage collection
+        gc.collect()
+        logger.info("Garbage collection performed")
+        
+        logger.info("Startup completed successfully")
+        
+    except Exception as e:
+        logger.error(f"Startup failed: {str(e)}", exc_info=True)
+        raise e
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    logger.info("Shutting down application...")
+    try:
+        # Clean up resources
+        gc.collect()
+        logger.info("Resources cleaned up")
+    except Exception as e:
+        logger.error(f"Shutdown error: {str(e)}")
+
 from flask import Flask, render_template
 app = FastAPI(
     title="Clarivue",
