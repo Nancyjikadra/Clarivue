@@ -13,57 +13,52 @@ import gc
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+app = FastAPI()
+
+# Serve static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Global pipeline variable
+pipeline = None
+
+
 @app.on_event("startup")
 async def startup_event():
+    global pipeline
     logger.info("Starting up application...")
     try:
-        # System information
-        process = psutil.Process()
+        # Clear CUDA cache
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
         
-        # Memory usage
-        memory = process.memory_info()
-        logger.info(f"Memory RSS: {memory.rss / 1024 / 1024:.2f} MB")
-        logger.info(f"Memory VMS: {memory.vms / 1024 / 1024:.2f} MB")
-        
-        # CPU usage
-        logger.info(f"CPU Usage: {process.cpu_percent()}%")
-        
-        # Available system resources
-        logger.info(f"Total System Memory: {psutil.virtual_memory().total / 1024 / 1024:.2f} MB")
-        logger.info(f"Available Memory: {psutil.virtual_memory().available / 1024 / 1024:.2f} MB")
-        
-        # Python version
-        logger.info(f"Python Version: {sys.version}")
-        
-        # Loaded modules
-        logger.info("Initializing critical modules...")
-        
-        # Model initialization logging
+        # Initialize pipeline
         logger.info("Initializing VideoQAPipeline...")
         pipeline = VideoQAPipeline(video_folder="videos")
         logger.info("VideoQAPipeline initialized successfully")
         
-        # Directory check
-        logger.info(f"Current working directory: {os.getcwd()}")
-        logger.info(f"Contents of videos directory: {os.listdir('videos')}")
-        
-        # Garbage collection
+        # Force garbage collection
         gc.collect()
-        logger.info("Garbage collection performed")
-        
-        logger.info("Startup completed successfully")
         
     except Exception as e:
         logger.error(f"Startup failed: {str(e)}", exc_info=True)
         raise e
-
+        
 @app.on_event("shutdown")
 async def shutdown_event():
+    global pipeline
     logger.info("Shutting down application...")
     try:
-        # Clean up resources
+        # Clear CUDA cache
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        
+        # Clear pipeline
+        pipeline = None
+        
+        # Force garbage collection
         gc.collect()
-        logger.info("Resources cleaned up")
+        
+        logger.info("Cleanup completed")
     except Exception as e:
         logger.error(f"Shutdown error: {str(e)}")
 
@@ -73,8 +68,7 @@ app = FastAPI(
     description="Ask me anything!!",
     version="1.0.0"
 )
-# Serve static files (CSS, JS)
-app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 # Initialize the VideoQAPipeline with the videos folder
 try:
