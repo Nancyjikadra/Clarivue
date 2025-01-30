@@ -23,6 +23,14 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Global pipeline variable
 pipeline = None
 
+@app.middleware("http")
+async def monitor_memory(request: Request, call_next):
+    logger.info("Memory status before request:")
+    import psutil
+    process = psutil.Process()
+    logger.info(f"Memory usage: {process.memory_info().rss / 1024 / 1024:.2f} MB")
+    response = await call_next(request)
+    return response
 
 @app.on_event("startup")
 async def startup_event():
