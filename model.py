@@ -15,15 +15,18 @@ logger = logging.getLogger(__name__)
 
 class VideoQAPipeline:
     _instance = None
+    _models_initialized = False
 
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(VideoQAPipeline, cls).__new__(cls)
-        return cls._instance
 
     def __init__(self, video_folder="videos", cache_dir="video_cache", model_size="tiny"):
-        if hasattr(self, 'initialized'):
-            return
+        if not hasattr(self, 'initialized'):
+            self.initialized = True
+            self.video_folder = video_folder
+            self.cache_dir = cache_dir
+            self.model_size = model_size
+            os.makedirs(cache_dir, exist_ok=True)
+            self.device = "cpu"
+            self.video_transcripts = {}
         
         try:
             logger.info("Initializing VideoQAPipeline...")
@@ -153,6 +156,22 @@ class VideoQAPipeline:
         top_indices = np.argsort(similarities)[::-1][:top_k]
         return [video_names[i] for i in top_indices]
 
+    def initialize_models(self):
+        """Lazy load models only when needed"""
+        if not self._models_initialized:
+            try:
+                logger.info("Loading models...")
+                self.transcription_model = whisper.load_model(self.model_size, device=self.device)
+                self.qa_pipeline = pipeline("question-answering", 
+                                         model="deepset/minilm-uncased-squad2", 
+                                         device=-1)
+                self.embedding_model = SentenceTransformer('paraphrase-MiniLM-L3-v2')
+                self._models_initialized = True
+                logger.info("Models loaded successfully")
+            except Exception as e:
+                logger.error(f"Model initialization error: {str(e)}")
+                raise
+    
     def answer_question(self, question):
         """Answer a single question based on selected videos."""
         # Select most relevant videos
