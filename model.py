@@ -8,6 +8,11 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import librosa
 
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 class VideoQAPipeline:
     _instance = None
 
@@ -17,6 +22,51 @@ class VideoQAPipeline:
         return cls._instance
 
     def __init__(self, video_folder="videos", cache_dir="video_cache"):
+        if hasattr(self, 'initialized'):
+            return
+        
+        try:
+            logger.info("Initializing VideoQAPipeline...")
+            self.initialized = True
+
+            self.video_folder = video_folder
+            self.cache_dir = cache_dir
+            os.makedirs(cache_dir, exist_ok=True)
+
+            # Log available memory
+            logger.info(f"Available memory before loading models: {torch.cuda.get_device_properties(0).total_memory if torch.cuda.is_available() else 'CPU only'}")
+
+            # Load models with error handling
+            try:
+                logger.info("Loading Whisper model...")
+                self.device = "cuda" if torch.cuda.is_available() else "cpu"
+                self.transcription_model = whisper.load_model("base", device=self.device)
+                logger.info("Whisper model loaded successfully")
+
+                logger.info("Loading SentenceTransformer model...")
+                self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+                logger.info("SentenceTransformer model loaded successfully")
+
+                logger.info("Loading QA pipeline...")
+                self.qa_pipeline = pipeline("question-answering", 
+                                         model="deepset/roberta-base-squad2", 
+                                         device=0 if torch.cuda.is_available() else -1)
+                logger.info("QA pipeline loaded successfully")
+
+            except Exception as e:
+                logger.error(f"Error loading models: {str(e)}")
+                raise
+
+            # Process videos
+            logger.info("Processing videos...")
+            self.video_transcripts = self.preprocess_all_videos()
+            logger.info(f"Processed {len(self.video_transcripts)} videos")
+
+        except Exception as e:
+            logger.error(f"Initialization error: {str(e)}")
+            raise
+
+    '''def __init__(self, video_folder="videos", cache_dir="video_cache"):
         if hasattr(self, 'initialized'):
             return
         self.initialized = True
@@ -30,7 +80,7 @@ class VideoQAPipeline:
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
         self.qa_pipeline = pipeline("question-answering", model="deepset/roberta-base-squad2", device=0 if torch.cuda.is_available() else -1)
 
-        self.video_transcripts = self.preprocess_all_videos()
+        self.video_transcripts = self.preprocess_all_videos()'''
 
     def preprocess_all_videos(self):
         """Preprocess all videos in the video folder."""
