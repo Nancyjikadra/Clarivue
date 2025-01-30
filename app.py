@@ -23,6 +23,10 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Global pipeline variable
 pipeline = None
 
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+
 @app.middleware("http")
 async def monitor_memory(request: Request, call_next):
     logger.info("Memory status before request:")
