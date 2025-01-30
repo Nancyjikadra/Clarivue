@@ -41,17 +41,10 @@ async def startup_event():
     global pipeline
     logger.info("Starting up application...")
     try:
-        # Clear CUDA cache
+        # Clear memory
         gc.collect()
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
-        
-        # Initialize pipeline
-        logger.info("Initializing VideoQAPipeline...")
         pipeline = VideoQAPipeline(video_folder="videos", model_size="tiny")
-        logger.info("VideoQAPipeline initialized successfully")
-        
-        
+        logger.info("Initial pipeline setup complete")
     except Exception as e:
         logger.error(f"Startup failed: {str(e)}", exc_info=True)
         raise e
@@ -90,6 +83,7 @@ async def read_contact(request: Request):
 
 @app.post("/api/predict")
 async def predict(request: Request):
+    global pipeline
     try:
         data = await request.json()
         question = data.get("question", "")
@@ -97,10 +91,14 @@ async def predict(request: Request):
         if not question:
             raise HTTPException(status_code=400, detail="Question is required")
 
-        if pipeline is None:
-            raise HTTPException(status_code=503, detail="Model not initialized")
-
+        # Clear memory before processing
+        gc.collect()
+        
         result = pipeline.answer_question(question)
+        
+        # Clear memory after processing
+        gc.collect()
+        
         return JSONResponse(result)
     except Exception as e:
         logger.error(f"Prediction error: {str(e)}")
