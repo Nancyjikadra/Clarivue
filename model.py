@@ -21,7 +21,7 @@ class VideoQAPipeline:
             cls._instance = super(VideoQAPipeline, cls).__new__(cls)
         return cls._instance
 
-    def __init__(self, video_folder="videos", cache_dir="video_cache"):
+    def __init__(self, video_folder="videos", cache_dir="video_cache", model_size="tiny"):
         if hasattr(self, 'initialized'):
             return
         
@@ -33,10 +33,34 @@ class VideoQAPipeline:
             self.cache_dir = cache_dir
             os.makedirs(cache_dir, exist_ok=True)
 
-            # Log available memory
-            logger.info(f"Available memory before loading models: {torch.cuda.get_device_properties(0).total_memory if torch.cuda.is_available() else 'CPU only'}")
+            # Load models with smaller versions
+            logger.info(f"Loading Whisper model (size: {model_size})...")
+            self.device = "cpu"  # Force CPU usage
+            self.transcription_model = whisper.load_model(model_size, device=self.device)
+            logger.info("Whisper model loaded successfully")
 
-            # Load models with error handling
+            logger.info("Loading QA pipeline...")
+            self.qa_pipeline = pipeline(
+                "question-answering", 
+                model="deepset/minilm-uncased-squad2",  # Smaller model
+                device=-1  # Force CPU
+            )
+            logger.info("QA pipeline loaded successfully")
+
+            logger.info("Loading SentenceTransformer...")
+            self.embedding_model = SentenceTransformer('paraphrase-MiniLM-L3-v2')  # Smaller model
+            logger.info("SentenceTransformer loaded successfully")
+
+          # Process videos
+            logger.info("Processing videos...")
+            self.video_transcripts = self.preprocess_all_videos()
+            logger.info(f"Processed {len(self.video_transcripts)} videos")
+
+        
+        except Exception as e:
+            logger.error(f"Initialization error: {str(e)}")
+            raise
+            '''# Load models with error handling
             try:
                 logger.info("Loading Whisper model...")
                 self.device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -55,16 +79,8 @@ class VideoQAPipeline:
 
             except Exception as e:
                 logger.error(f"Error loading models: {str(e)}")
-                raise
+                raise'''
 
-            # Process videos
-            logger.info("Processing videos...")
-            self.video_transcripts = self.preprocess_all_videos()
-            logger.info(f"Processed {len(self.video_transcripts)} videos")
-
-        except Exception as e:
-            logger.error(f"Initialization error: {str(e)}")
-            raise
 
     '''def __init__(self, video_folder="videos", cache_dir="video_cache"):
         if hasattr(self, 'initialized'):
